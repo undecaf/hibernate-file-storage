@@ -1,6 +1,7 @@
 package at.rennweg.htl.webt.blobs.controllers;
 
 import at.rennweg.htl.webt.blobs.models.File;
+import at.rennweg.htl.webt.blobs.models.Image;
 import at.rennweg.htl.webt.blobs.repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,13 +23,15 @@ import java.util.UUID;
 
 
 /**
- * Handles up- and downloads of {@link File}s.
+ * Handles up- and downloads of {@link File}s and {@linkImage}s.
  *
  * @author F. Kasper, ferdinand.kasper@bildung.gv.at
  */
 @RestController
 @RequestMapping("/content")
 public class ContentController {
+
+    public static final int[] THUMB_DIMENSIONS = { 100, 200, 400 };
 
     private final FileRepository fileRepository;
 
@@ -45,7 +48,21 @@ public class ContentController {
         @RequestPart("file") MultipartFile uploaded,
         HttpServletRequest request) throws IOException, URISyntaxException {
 
-        File file = new File(uploaded);
+        File file;
+
+        // Has an image been uploaded?
+        if (uploaded.getContentType().startsWith("image/")) {
+            // Persist the image plus several thumbnails
+            file = new Image(uploaded);
+
+            for (int maxDimension : THUMB_DIMENSIONS) {
+                fileRepository.save(new Image(uploaded, maxDimension));
+            }
+
+        } else {
+            // Persist only the file
+            file = new File(uploaded);
+        }
 
         // Build the URI of the file
         file = fileRepository.save(file);

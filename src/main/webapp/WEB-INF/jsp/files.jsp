@@ -28,5 +28,7 @@
     </li>
   </c:forEach>
 </ol>
+
+<p><a href="gallery">View only images</a></p>
 </body>
 </html>
