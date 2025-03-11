@@ -1,3 +1,5 @@
+## :warning: This repository is no longer being maintained and has been archived.
+
 # Storing files as BLOBs with Spring, JPA and Hibernate ORM
 
 Application servers may store uploaded files in the server's file system and persist
